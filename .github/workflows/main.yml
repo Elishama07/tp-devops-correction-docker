@@ -59,3 +59,26 @@ jobs:
           context: http-server
           push: ${{ github.ref == 'refs/heads/main' }}  
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
+
+  deploy-infra:
+    needs: build-and-push-docker-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Ansible
+        run: |
+          python -m pip install --upgrade pip
+          pip install ansible
+
+      - name: Deploy with Ansible
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: false
+        run: |
+          cd ../ansible
+          echo "${{ secrets.DEPLOY_KEY }}" > ./id_rsa
+          chmod 600 ./id_rsa
+
+          echo "${{ secrets.VAULT_PASS }}" > vault_pass.txt
+          ansible-playbook -i inventories/setup.yml playbook.yml --vault-password-file vault_pass.txt --private-key ./id_rsa
+          rm vault_pass.txt id_rsa
+
+  

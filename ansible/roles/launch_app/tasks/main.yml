@@ -1,0 +1,14 @@
+- name: Run API app container 
+  docker_container:
+    name: simple-api
+    image: elishama07/tp-devops-simple-api
+    pull: true
+    networks:
+      - name: "app-network"
+    ports:
+      - "8080:8080"
+    env:
+      DATABASE_HOST=database
+      DATABASE_PASSWORD="{{POSTGRES_PASSWORD}}"
+    state: started
+    

@@ -1,0 +1,10 @@
+- name: Run proxy (httpd) container
+  docker_container:
+    name: my-httpd-container
+    image: elishama07/tp-devops-httpd
+    pull: true
+    networks:
+      - name: "app-network"
+    ports:
+      - "80:80"
+    state: started
